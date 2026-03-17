@@ -1,0 +1,15 @@
+# build
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+
+# compiled
+*.o
+*.out
+*.exe
+
+
+# IDE
+.idea/
+.vscode/
