@@ -266,32 +266,9 @@
         <mesh filename="meshes/visual/finger.obj"/>
       </geometry>
     </visual>
-    <!-- screw mount -->
-    <collision>
-      <origin rpy="0 0 0" xyz="0 18.5e-3 11e-3"/>
+    <collision name="fr3_leftfinger_collision">
       <geometry>
-        <box size="22e-3 15e-3 20e-3"/>
-      </geometry>
-    </collision>
-    <!-- cartriage sledge -->
-    <collision>
-      <origin rpy="0 0 0" xyz="0 6.8e-3 2.2e-3"/>
-      <geometry>
-        <box size="22e-3 8.8e-3 3.8e-3"/>
-      </geometry>
-    </collision>
-    <!-- diagonal finger -->
-    <collision>
-      <origin rpy="0.5235987755982988 0 0" xyz="0 15.9e-3 28.35e-3"/>
-      <geometry>
-        <box size="17.5e-3 7e-3 23.5e-3"/>
-      </geometry>
-    </collision>
-    <!-- rubber tip with which to grasp -->
-    <collision>
-      <origin rpy="0 0 0" xyz="0 7.58e-3 45.25e-3"/>
-      <geometry>
-        <box size="17.5e-3 15.2e-3 18.5e-3"/>
+        <mesh filename="meshes/collision/finger.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -307,32 +284,10 @@
         <mesh filename="meshes/visual/finger.obj"/>
       </geometry>
     </visual>
-    <!-- screw mount -->
-    <collision>
-      <origin rpy="0 0 0" xyz="0 18.5e-3 11e-3"/>
+    <collision name="fr3_rightfinger_collision">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="22e-3 15e-3 20e-3"/>
-      </geometry>
-    </collision>
-    <!-- cartriage sledge -->
-    <collision>
-      <origin rpy="0 0 0" xyz="0 6.8e-3 2.2e-3"/>
-      <geometry>
-        <box size="22e-3 8.8e-3 3.8e-3"/>
-      </geometry>
-    </collision>
-    <!-- diagonal finger -->
-    <collision>
-      <origin rpy="-0.5235987755982988 0 3.141592653589793" xyz="0 15.9e-3 28.35e-3"/>
-      <geometry>
-        <box size="17.5e-3 7e-3 23.5e-3"/>
-      </geometry>
-    </collision>
-    <!-- rubber tip with which to grasp -->
-    <collision>
-      <origin rpy="0 0 0" xyz="0 7.58e-3 45.25e-3"/>
-      <geometry>
-        <box size="17.5e-3 15.2e-3 18.5e-3"/>
+        <mesh filename="meshes/collision/finger.obj"/>
       </geometry>
     </collision>
     <inertial>

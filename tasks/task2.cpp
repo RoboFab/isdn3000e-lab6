@@ -50,6 +50,7 @@ void task2() {
     pinocchio::updateGeometryPlacements(model, data, visual_model, visual_data);
     for (int i = 0; i < (int)visual_model.geometryObjects.size(); ++i) {
         const auto& obj = visual_model.geometryObjects[i];
+        std::cout << obj.name << std::endl;
         Eigen::MatrixXd V;
         Eigen::MatrixXi F;
         igl::readOBJ(obj.meshPath, V, F);
