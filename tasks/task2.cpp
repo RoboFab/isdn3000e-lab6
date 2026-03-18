@@ -64,9 +64,9 @@ void task2() {
     }
 
     auto is_near_neighbor_pair = [&](int pair_idx) {
-        const auto& cp = collision_model.collisionPairs[pair_idx];
-        const auto& goA = collision_model.geometryObjects[cp.first];
-        const auto& goB = collision_model.geometryObjects[cp.second];
+        const auto& collision_pair = collision_model.collisionPairs[pair_idx];
+        const auto& goA = collision_model.geometryObjects[collision_pair.first];
+        const auto& goB = collision_model.geometryObjects[collision_pair.second];
         pinocchio::JointIndex jA = goA.parentJoint;
         pinocchio::JointIndex jB = goB.parentJoint;
 
@@ -82,7 +82,7 @@ void task2() {
     bool in_collision = false;
     std::vector<std::pair<std::string, std::string>> colliding_pairs;
     polyscope::state::userCallback = [&]() {
-        ImGui::Text("Task1: Self-collision detection");
+        ImGui::Text("Task2: Self-collision detection");
         ImGui::Separator();
 
         if (ImGui::Button("Reset to neutral")) {
@@ -122,9 +122,9 @@ void task2() {
         for (int k = 0; k < (int)collision_model.collisionPairs.size(); ++k) {
             if (!collision_data.collisionResults[k].isCollision()) continue;
             if (is_near_neighbor_pair(k)) continue;
-            const auto& cp = collision_model.collisionPairs[k];
-            const std::string& nameA = collision_model.geometryObjects[cp.first].name;
-            const std::string& nameB = collision_model.geometryObjects[cp.second].name;
+            const auto& collision_pair = collision_model.collisionPairs[k];
+            const std::string& nameA = collision_model.geometryObjects[collision_pair.first].name;
+            const std::string& nameB = collision_model.geometryObjects[collision_pair.second].name;
             colliding_pairs.push_back({nameA, nameB});
         }
 

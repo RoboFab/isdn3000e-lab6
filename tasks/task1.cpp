@@ -55,21 +55,21 @@ void task1() {
 
     pinocchio::Model model;
     pinocchio::Data data(model);
-    pinocchio::GeometryModel geom_model;
-    auto geom1 = std::make_shared<coal::Box>(sx, sy, sz);
-    auto geom2 = std::make_shared<coal::Box>(sx, sy, sz);
+    pinocchio::GeometryModel collision_model;
+    auto box_geom1 = std::make_shared<coal::Box>(sx, sy, sz);
+    auto box_geom2 = std::make_shared<coal::Box>(sx, sy, sz);
     pinocchio::SE3 pose1 = pinocchio::SE3::Identity();
     pose1.translation() = t1;
     pinocchio::SE3 pose2 = pinocchio::SE3::Identity();
     pose2.translation() = t2;
 
     // TODO 1: Define geometry and collision pair of the two boxes.
-    pinocchio::GeometryObject obj1("box1", 0, pose1, geom1);
-    pinocchio::GeometryObject obj2("box2", 0, pose2, geom2);
-    pinocchio::GeomIndex id1 = geom_model.addGeometryObject(obj1);
-    pinocchio::GeomIndex id2 = geom_model.addGeometryObject(obj2);
-    geom_model.addCollisionPair(pinocchio::CollisionPair(id1, id2));
-    pinocchio::GeometryData geom_data(geom_model);
+    pinocchio::GeometryObject obj1("box1", 0, pose1, box_geom1);
+    pinocchio::GeometryObject obj2("box2", 0, pose2, box_geom2);
+    pinocchio::GeomIndex id1 = collision_model.addGeometryObject(obj1);
+    pinocchio::GeomIndex id2 = collision_model.addGeometryObject(obj2);
+    collision_model.addCollisionPair(pinocchio::CollisionPair(id1, id2));
+    pinocchio::GeometryData geom_data(collision_model);
 
 
     Eigen::VectorXd q(0);
@@ -109,14 +109,14 @@ void task1() {
 
         box1->updateVertexPositions(V1w);
         box2->updateVertexPositions(V2w);
-        geom_model.geometryObjects[id1].placement = pinocchio::SE3::Identity();
-        geom_model.geometryObjects[id1].placement.translation() = t1;
-        geom_model.geometryObjects[id2].placement = pinocchio::SE3::Identity();
-        geom_model.geometryObjects[id2].placement.translation() = t2;
-        pinocchio::updateGeometryPlacements(model, data, geom_model, geom_data, q);
+        collision_model.geometryObjects[id1].placement = pinocchio::SE3::Identity();
+        collision_model.geometryObjects[id1].placement.translation() = t1;
+        collision_model.geometryObjects[id2].placement = pinocchio::SE3::Identity();
+        collision_model.geometryObjects[id2].placement.translation() = t2;
+        pinocchio::updateGeometryPlacements(model, data, collision_model, geom_data, q);
 
         // TODO 2: Compute collision and obtain the result of collision
-        pinocchio::computeCollision(geom_model, geom_data, 0);
+        pinocchio::computeCollision(collision_model, geom_data, 0);
         in_collision = geom_data.collisionResults[0].isCollision();
 
         ImGui::Separator();

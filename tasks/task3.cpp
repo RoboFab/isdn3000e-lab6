@@ -24,10 +24,7 @@ struct RRTNode {
     int parent;
 };
 
-static std::vector<Eigen::VectorXd> build_path(
-    const std::vector<RRTNode>& tree,
-    int node_idx,
-    const Eigen::VectorXd& q_goal)
+static std::vector<Eigen::VectorXd> build_path(const std::vector<RRTNode>& tree, int node_idx, const Eigen::VectorXd& q_goal)
 {
     std::vector<Eigen::VectorXd> rev_path;
     int cur = node_idx;
@@ -49,13 +46,10 @@ static double compute_path_length(const std::vector<Eigen::VectorXd>& path) {
     return L;
 }
 
-static int nearest_node(
-    const std::vector<RRTNode>& tree,
-    const Eigen::VectorXd& q_rand)
+static int nearest_node(const std::vector<RRTNode>& tree, const Eigen::VectorXd& q_rand)
 {
     int near_id = -1;
     double best_dist = std::numeric_limits<double>::infinity();
-
     for (int i = 0; i < (int)tree.size(); ++i) {
         double d = (tree[i].q - q_rand).squaredNorm();
         if (d < best_dist) {
@@ -66,19 +60,12 @@ static int nearest_node(
     return near_id;
 }
 
-static Eigen::VectorXd steer(
-    const Eigen::VectorXd& q_near,
-    const Eigen::VectorXd& q_rand,
-    const float q_min[7],
-    const float q_max[7],
-    double step_size)
+static Eigen::VectorXd steer(const Eigen::VectorXd& q_near, const Eigen::VectorXd& q_rand, const float q_min[7], const float q_max[7], double step_size)
 {
     Eigen::VectorXd dir = q_rand - q_near;
     double dir_norm = dir.norm();
     if (dir_norm < 1e-9) return q_near;
-
     dir /= dir_norm;
-
     Eigen::VectorXd q_new = q_near + step_size * dir;
     for (int j = 0; j < 7; ++j) {
         q_new[j] = std::max((double)q_min[j], std::min((double)q_max[j], q_new[j]));
@@ -125,7 +112,7 @@ static std::vector<Eigen::VectorXd> rrt_single(
         ignore_pairs[k] = ignore_pair(k);
     }
 
-    auto valid_state = [&](const Eigen::VectorXd& q7) {
+    auto valid_node = [&](const Eigen::VectorXd& q7) {
         Eigen::VectorXd q_full = pinocchio::neutral(model);
         for (int j = 0; j < 7; ++j) q_full[j] = q7[j];
 
@@ -146,7 +133,7 @@ static std::vector<Eigen::VectorXd> rrt_single(
         for (int i = 0; i <= edge_checks; ++i) {
             double t = double(i) / double(edge_checks);
             Eigen::VectorXd qm = (1.0 - t) * qa + t * qb;
-            if (!valid_state(qm)) return false;
+            if (!valid_node(qm)) return false;
         }
         return true;
     };
@@ -169,8 +156,8 @@ static std::vector<Eigen::VectorXd> rrt_single(
     };
 
     std::vector<Eigen::VectorXd> empty_path;
-    if (!valid_state(q_start)) return empty_path;
-    if (!valid_state(q_goal)) return empty_path;
+    if (!valid_node(q_start)) return empty_path;
+    if (!valid_node(q_goal)) return empty_path;
 
     std::vector<RRTNode> tree;
     tree.push_back({q_start, -1});
@@ -262,8 +249,8 @@ void task3() {
     pinocchio::GeometryObject wall_obj("wall_collision", 0, wall_pose, wall_geom);
     pinocchio::GeomIndex wall_id = collision_model.addGeometryObject(wall_obj);
 
-    // TODO 2: Add the wall object to the collision model for collision detection.
     for (int i = 0; i < robot_geom_count; ++i) {
+        // TODO 2: Add the wall object to the collision model for collision detection.
         collision_model.addCollisionPair(pinocchio::CollisionPair(i, wall_id));
     }
     pinocchio::Data data(model);
@@ -299,6 +286,30 @@ void task3() {
         V_locals.push_back(V);
         meshes.push_back(ms);
     }
+
+    std::vector<std::array<double,3>> cubeV = {
+        {-0.5,-0.5,-0.5},{ 0.5,-0.5,-0.5},{ 0.5, 0.5,-0.5},{-0.5, 0.5,-0.5},
+        {-0.5,-0.5, 0.5},{ 0.5,-0.5, 0.5},{ 0.5, 0.5, 0.5},{-0.5, 0.5, 0.5}
+    };
+    std::vector<std::array<int,3>> cubeF = {
+        {0,1,2},{0,2,3},
+        {4,5,6},{4,6,7},
+        {0,1,5},{0,5,4},
+        {2,3,7},{2,7,6},
+        {1,2,6},{1,6,5},
+        {0,3,7},{0,7,4}
+    };
+    Eigen::Vector3d cube_t(0.55, 0.20, 0.60);
+    double cube_size = 0.04;
+    Eigen::Matrix3d cube_R =
+        (Eigen::AngleAxisd(M_PI / 2.0, Eigen::Vector3d::UnitZ()) *
+         Eigen::AngleAxisd(M_PI / 6.0, Eigen::Vector3d::UnitY())).toRotationMatrix();
+    for (auto& v : cubeV) {
+        Eigen::Vector3d p(v[0], v[1], v[2]);
+        p = cube_size * (cube_R * p) + cube_t;
+        v = {p.x(), p.y(), p.z()};
+    }
+    auto* cube = polyscope::registerSurfaceMesh("target_cube", cubeV, cubeF);
     std::vector<std::array<double,3>> wallV = {
         {-0.5,-0.5,-0.5},{ 0.5,-0.5,-0.5},{ 0.5, 0.5,-0.5},{-0.5, 0.5,-0.5},
         {-0.5,-0.5, 0.5},{ 0.5,-0.5, 0.5},{ 0.5, 0.5, 0.5},{-0.5, 0.5, 0.5}
@@ -342,7 +353,7 @@ void task3() {
     };
 
     polyscope::state::userCallback = [&]() {
-        ImGui::Text("Task2: Motion Planning with RRT");
+        ImGui::Text("Task3: Motion Planning with RRT");
         ImGui::Separator();
         if (ImGui::Button("Reset to neutral")) {
             q = pinocchio::neutral(model);
