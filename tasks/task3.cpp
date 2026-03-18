@@ -170,22 +170,10 @@ static std::vector<Eigen::VectorXd> rrt_single(
         //  - steer()
         //  - valid_edge()
         //  - build_path()
-        int near_id = nearest_node(tree, q_rand);
-        if (near_id < 0) continue;
 
-        Eigen::VectorXd q_near = tree[near_id].q;
-        Eigen::VectorXd q_new = steer(q_near, q_rand, q_min, q_max, step_size);
 
-        if ((q_new - q_near).norm() < 1e-9) continue;
 
-        if (!valid_edge(q_near, q_new)) continue;
 
-        tree.push_back({q_new, near_id});
-        int new_id = (int)tree.size() - 1;
-
-        if ((q_new - q_goal).norm() < goal_thresh && valid_edge(q_new, q_goal)) {
-            return build_path(tree, new_id, q_goal);
-        }
     }
 
     return empty_path;
@@ -251,7 +239,9 @@ void task3() {
 
     for (int i = 0; i < robot_geom_count; ++i) {
         // TODO 2: Add the wall object to the collision model for collision detection.
-        collision_model.addCollisionPair(pinocchio::CollisionPair(i, wall_id));
+
+
+
     }
     pinocchio::Data data(model);
     pinocchio::GeometryData visual_data(visual_model);
@@ -401,14 +391,9 @@ void task3() {
                 status = "Please set both start and goal first.";
             } else {
                 // TODO 3: Call the rrt_multi() function to run motion planning.
-                planned_paths = rrt_multi(
-                    q_start, q_goal,
-                    q_min, q_max,
-                    model, data,
-                    collision_model, collision_data,
-                    finger1_qidx, finger2_qidx,
-                    gripper_width
-                );
+
+
+
                 if (planned_paths.empty()) {
                     status = "No valid path found.";
                 } else {

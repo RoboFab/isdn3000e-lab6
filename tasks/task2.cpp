@@ -28,10 +28,9 @@ void task2() {
     pinocchio::GeometryData visual_data(visual_model);
 
     // TODO 1: Define the geometry and collision pair of the robot.
-    pinocchio::GeometryModel collision_model;
-    pinocchio::urdf::buildGeom(model, urdf_path, pinocchio::COLLISION, collision_model, robot_dir);
-    collision_model.addAllCollisionPairs();
-    pinocchio::GeometryData collision_data(collision_model);
+
+
+
     Eigen::VectorXd q = pinocchio::neutral(model);
 
     float q_ui[7];
@@ -71,11 +70,9 @@ void task2() {
         pinocchio::JointIndex jB = goB.parentJoint;
 
         // TODO 2: Remove the collision detection between self nodes, parent-child nodes, and brother nodes.
-        if (jA == jB) return true;
-        if (jA > 0 && jB > 0) {
-            if (model.parents[jA] == jB || model.parents[jB] == jA) return true;
-            if (model.parents[jA] == model.parents[jB]) return true;
-        }
+
+
+
         return false;
     };
 
@@ -117,16 +114,9 @@ void task2() {
 
         // TODO 3: Compute collision and obtain the result of collision.
         //  Remember to ignore the collision of the near neighbor nodes.
-        pinocchio::computeCollisions(model, data, collision_model, collision_data, q, false);
-        colliding_pairs.clear();
-        for (int k = 0; k < (int)collision_model.collisionPairs.size(); ++k) {
-            if (!collision_data.collisionResults[k].isCollision()) continue;
-            if (is_near_neighbor_pair(k)) continue;
-            const auto& collision_pair = collision_model.collisionPairs[k];
-            const std::string& nameA = collision_model.geometryObjects[collision_pair.first].name;
-            const std::string& nameB = collision_model.geometryObjects[collision_pair.second].name;
-            colliding_pairs.push_back({nameA, nameB});
-        }
+
+
+
 
         in_collision = !colliding_pairs.empty();
 

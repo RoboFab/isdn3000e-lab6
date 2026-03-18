@@ -53,6 +53,7 @@ void task1() {
     auto* box1 = polyscope::registerSurfaceMesh("box 1", V1w, F);
     auto* box2 = polyscope::registerSurfaceMesh("box 2", V2w, F);
 
+
     pinocchio::Model model;
     pinocchio::Data data(model);
     pinocchio::GeometryModel collision_model;
@@ -63,13 +64,11 @@ void task1() {
     pinocchio::SE3 pose2 = pinocchio::SE3::Identity();
     pose2.translation() = t2;
 
+
     // TODO 1: Define geometry and collision pair of the two boxes.
-    pinocchio::GeometryObject obj1("box1", 0, pose1, box_geom1);
-    pinocchio::GeometryObject obj2("box2", 0, pose2, box_geom2);
-    pinocchio::GeomIndex id1 = collision_model.addGeometryObject(obj1);
-    pinocchio::GeomIndex id2 = collision_model.addGeometryObject(obj2);
-    collision_model.addCollisionPair(pinocchio::CollisionPair(id1, id2));
-    pinocchio::GeometryData geom_data(collision_model);
+    pinocchio::GeomIndex id1;
+    pinocchio::GeomIndex id2;
+    pinocchio::GeometryData geom_data;
 
 
     Eigen::VectorXd q(0);
@@ -80,22 +79,17 @@ void task1() {
     polyscope::state::userCallback = [&]() {
         ImGui::Text("Task 1: Box collision detection");
         ImGui::Separator();
-
         if (ImGui::Button("Reset")) {
             tx = 0.6f;
             ty = 0.0f;
             tz = 0.0f;
         }
-
         ImGui::SliderFloat("translate x", &tx, -1.0f, 1.0f);
         ImGui::SliderFloat("translate y", &ty, -1.0f, 1.0f);
         ImGui::SliderFloat("translate z", &tz, -1.0f, 1.0f);
-
         t2 = Eigen::Vector3d(tx, ty, tz);
-
         V1w = V;
         V2w = V;
-
         for (auto& p : V1w) {
             p[0] += t1[0];
             p[1] += t1[1];
@@ -116,8 +110,8 @@ void task1() {
         pinocchio::updateGeometryPlacements(model, data, collision_model, geom_data, q);
 
         // TODO 2: Compute collision and obtain the result of collision
-        pinocchio::computeCollision(collision_model, geom_data, 0);
-        in_collision = geom_data.collisionResults[0].isCollision();
+
+
 
         ImGui::Separator();
         if (in_collision) {
